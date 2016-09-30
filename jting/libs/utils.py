@@ -32,7 +32,6 @@ class Pagination(object):
             self.prev = page - 1
         else:
             self.prev = None
-
         if page < pages:
             self.next = page + 1
         else:
