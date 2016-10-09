@@ -7,6 +7,9 @@ try:
 except ImportError:
     gevent = None
 
+def xmldatetime(date):
+    return date.strftime('%Y-%m-%dT%H:%M:%SZ')
+
 def is_json():
     if request.is_xhr:
         return True

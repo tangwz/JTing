@@ -6,7 +6,7 @@ from flask import current_app, abort
 from sqlalchemy.orm import Query, class_mapper
 from flask_sqlalchemy import SQLAlchemy as _SQLAlchemy
 
-from libs.cache import ONE_DAY, FIVE_MINUTES
+from jting.libs.cache import ONE_DAY, FIVE_MINUTES
 
 __all__ = ['db', 'Base']
 
@@ -44,9 +44,10 @@ class CacheProperty(object):
             return None
 
 class BaseMixin(object):
-    pass
+    def __getitem__(self, key):
+        return getattr(self, key)
 
-db = SQLAlchemy(session_opions={
+db = SQLAlchemy(session_options={
     'expire_on_commit': False,
     'autoflush': False,
 })

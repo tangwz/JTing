@@ -11,7 +11,7 @@ from sqlalchemy import SmallInteger, Integer
 from sqlalchemy.orm.attributes import get_history
 from .base import db, Base
 
-class User(Base):
+class User(db.Model):
     __tablename__ = 'jting_user'
 
     ROLE_SUPER = 9
