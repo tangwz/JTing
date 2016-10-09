@@ -29,7 +29,7 @@ def create_app(config=None):
     app = Flask(__name__)
 
     # load default configuration
-    app.config.from_object('jting.settings')
+    app.config.from_object('jting.local_settings')
 
     # load system configuration
     if os.path.isfile(SYSTEM_CONF):
