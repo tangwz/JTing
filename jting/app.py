@@ -25,11 +25,12 @@ class Flask(_Flask):
         ]
     )
 
+# Factory method
 def create_app(config=None):
     app = Flask(__name__)
 
     # load default configuration
-    app.config.from_object('jting.local_settings')
+    app.config.from_object('jting.settings')
 
     # load system configuration
     if os.path.isfile(SYSTEM_CONF):

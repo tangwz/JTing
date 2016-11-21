@@ -1,16 +1,17 @@
 # coding: utf-8
 """
-    jting.local_settings
+    jting.local_config
     ~~~~~~~~~~~~~~~~~~~~
 
-    This local settiongs just used in local environment.
+    This local config just used in local environment.
 """
 
 import os
 
-SECRET_KEY = 'secret'
+SECRET_KEY = 'development'
 SQLALCHEMY_NATIVE_UNICODE = False
-SQLALCHEMY_DATABASE_URI = 'mysql://jting:jting@192.168.42.128/dev'
+SQLALCHEMY_DATABASE_URI = ''
+SQLALCHEMY_TRACK_MODIFICATIONS = True
 JTING_REDIS_URI = ''
 JTING_CACHE_REDIS_URI = ''
 
