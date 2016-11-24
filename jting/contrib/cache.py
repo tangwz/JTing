@@ -9,6 +9,7 @@ class Cache(object):
         self.prefix = prefix
         self.config = app.config
 
+        # cache type define
         cache_type = '_%s' % self._config('type')
         kwargs.update(dict(
             default_timeout = self._config('DEFAULT_TIMEOUT', 100)
