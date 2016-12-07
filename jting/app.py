@@ -4,7 +4,6 @@ import os
 from datetime import datetime
 from flask import Flask as _Flask
 from flask.json import JSONEncoder as _JSONEncoder
-SYSTEM_CONF = '/etc/jting/conf.py'
 
 class JSONEncoder(_JSONEncoder):
     def default(self, o):
@@ -31,10 +30,6 @@ def create_app(config=None):
 
     # load default configuration
     app.config.from_object('jting.settings')
-
-    # load system configuration
-    if os.path.isfile(SYSTEM_CONF):
-        app.config.from_pyfile(SYSTEM_CONF)
 
     # load environment configuration
     if 'JTING_CONF' in os.environ:
