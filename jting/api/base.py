@@ -31,3 +31,4 @@ def require_login(permission=None):
             pass
         return decorated
     return wrapper
+

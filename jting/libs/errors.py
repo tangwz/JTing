@@ -4,6 +4,7 @@ from flask import json
 from werkzeug.exceptions import HTTPException
 from werkzeug._compat import text_type
 
+
 class APIException(HTTPException):
     code = 400
     error = 'invalid_request'
@@ -24,6 +25,7 @@ class APIException(HTTPException):
     def get_headers(self, environ=None):
         return [('Content-Type', 'application/json')]
 
+
 class FormError(APIException):
     error = 'invalid_form'
 
@@ -37,15 +39,18 @@ class FormError(APIException):
             error_form = self.form.errors,
         )))
 
+
 class NotAuth(APIException):
     code = 401
     error = 'require_login'
     description = 'Authorization is required'
 
+
 class NotConfidential(APIException):
     code = 403
     error = 'require_confidential'
     description = 'Only confidential clients are allowed'
+
 
 class NotFound(APIException):
     code = 404
@@ -54,3 +59,12 @@ class NotFound(APIException):
     def __init__(self, key):
         description = '%s not found' % key
         super(NotFound, self).__init__(description=description)
+
+
+class Denied(APIException):
+    code = 403
+    error = 'permission denied'
+
+    def __init__(self, key):
+        description = 'You have no permission in %s' % key
+        super(Denied, self).__init__(description=description)

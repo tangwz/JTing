@@ -62,4 +62,4 @@ def init_app(app):
     app.wsgi_app = ApiVersionMiddleware(app.wsgi_app)
 
 
-    app.register_blueprint(bp, url_prefix='/api/1')
+    app.register_blueprint(bp, url_prefix='/api/' + str(CURRENT_VERSION))

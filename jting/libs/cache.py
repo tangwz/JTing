@@ -22,8 +22,10 @@ def init_app(app):
 
     app.extensions['jting_redis'] = client
 
+
 def use_cache(prefix='jting'):
     return current_app.extensions[prefix + '_cache']
+
 
 def use_redis(prefix='jting'):
     key = prefix + '_redis'

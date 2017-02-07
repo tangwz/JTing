@@ -1,21 +1,22 @@
 # coding: utf-8
 
-import hashlib
-
 from flask import request
-from flask_wtf import Form as BaseForm
+from flask_wtf import FlaskForm as BaseForm
+from wtforms import SelectMultipleField
 from wtforms.fields import StringField, PasswordField
-from wtforms.fields import TextAreaField, IntegerField
-from wtforms.validators import DataRequired, Optional
-from wtforms.validators import Email, Length, Regexp, URL
+from wtforms.validators import DataRequired
+from wtforms.validators import Email, Regexp
 from wtforms.validators import StopValidation
 from werkzeug.datastructures import MultiDict
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from jting.libs.errors import FormError
-from jting.models import db, User
+from models import db, AdminUser
+
 
 class Form(BaseForm):
     @classmethod
-    def create_api_form(cls, obj=None):
+    def api_form(cls, obj=None):
         formdata = MultiDict(request.get_json())
         form = cls(formdata=formdata, obj=obj, csrf_enabled=False)
         form._obj = obj
@@ -27,51 +28,55 @@ class Form(BaseForm):
         obj = getattr(self, '_obj', None)
         return obj and getattr(obj, key) == value
 
+
 class UserForm(Form):
     username = StringField(validators=[
         DataRequired(),
-        Length(min=3, max=20),
-        Regexp(r'^[a-z0-9]+$'),
+        Regexp(r'^[a-zA-Z0-9]+$')
+    ])
+    email = StringField(validators=[
+        DataRequired(),
+        Email()
+    ])
+    name = StringField(validators=[DataRequired()])
+    phone = StringField(validators=[
+        DataRequired(),
+        Regexp(r'^[0-9]+$')
     ])
     password = PasswordField(validators=[DataRequired()])
+    role = SelectMultipleField(validators=[DataRequired()])
 
-class PasswordForm(Form):
+
+class Password(Form):
     password = PasswordField(validators=[DataRequired()])
 
-class LoginForm(PasswordForm):
-    username = StringField('Username or Email', validators=[DataRequired()])
+
+class LoginForm(Form):
+    username = StringField(validators=[DataRequired()])
 
     def validate_password(self, field):
         username = self.username.data
-        if '@' in username:
-            user = User.cache.filter_first(email=username)
-        else:
-            user = User.cache.filter_first(username=username)
 
-        if not user or not user.check_password(field.data):
-            raise StopValidation('Invalid account or password')
+        user = db.session.query(AdminUser.username, AdminUser.password).filter(AdminUser.username == username)
 
-        self.user = user
+        if not user or check_password_hash(user.password, field.data):
+            raise StopValidation('Invalid username or password')
 
-class EmailForm(Form):
-    email = StringField(validators=[DataRequired(), Email()])
 
-    def validate_email(self, field):
-        if User.cache.filter_first(email=field.data):
-            raise StopValidation('Email has been registered.')
-
-class RegisterForm(UserForm, EmailForm):
+class RegisterForm(UserForm):
     def validate_username(self, field):
-        if User.cache.filter_first(username=field.data):
+        if db.session.query(AdminUser).filter(AdminUser.username == field.data.lower()).first():
             raise StopValidation('Username has been registered.')
 
     def create_user(self):
-        user = User(
-            username = self.username.data,
+        user = AdminUser(
+            username = self.username.data.lower(),
             email = self.email.data,
+            name = self.name.data,
+            phone = self.phone.data,
+            password = generate_password_hash(self.password.data),
+            role = self.role.data,
         )
-        user.password = self.password.data
-        user.role = User.ROLE_ACTIVE
         with db.auto_commit():
             db.session.add(user)
         return user
