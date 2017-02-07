@@ -1,17 +1,9 @@
 # coding: utf-8
 
-def register_base(app):
-    from flask import request
-
-    from jting.models import db
-
-    db.init_app(app)
-
 def register_app_blueprints(app):
-    from jting.views import front, account
+    from jting.api import init_app
 
-    app.register_blueprint(front.bp, url_prefix='')
-    app.register_blueprint(account.bp, url_prefix='/account')
+    init_app(app)
 
 def register_not_found(app):
     from flask import request
@@ -26,6 +18,5 @@ def register_not_found(app):
 def create_app(config=None):
     from .app import create_app
     app = create_app(config)
-    register_base(app)
     register_app_blueprints(app)
     return app

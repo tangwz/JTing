@@ -5,13 +5,13 @@ from flask import url_for
 from flask_script import Manager
 
 from jting import create_app
-from jting.models.base import db
-from jting.models.user import User
+from jting.models import db, AdminUser, AdminRoles
 
 CONFIG = os.path.abspath('./local_config.py')
 
 app = create_app(CONFIG)
 manager = Manager(app)
+
 
 @manager.command
 def list_routes():
@@ -32,7 +32,7 @@ def list_routes():
 
 
 @manager.command
-def adduser(username, password, role=User.ROLE_ACTIVE, **kwargs):
+def adduser(username, password, role=1, **kwargs):
     """
     Used to add new user into database.
     Usage:
@@ -45,7 +45,7 @@ def adduser(username, password, role=User.ROLE_ACTIVE, **kwargs):
     """
     userdata = dict(username=username, password=password, role=role)
     userdata.update(kwargs)
-    user = User(**userdata)
+    user = AdminUser(**userdata)
 
     with app.app_context():
         try:

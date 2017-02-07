@@ -3,6 +3,7 @@
 import re
 
 from flask import Blueprint, request
+from . import session
 
 VERSION_URL = re.compile(r'^/api/\d/')
 VERSION_ACCEPT = re.compile(r'application/vnd\.jting\+json;\s+version=(\d)')
@@ -44,7 +45,7 @@ def find_version(environ):
 
 class ApiVersionMiddleware(object):
     def __init__(self, app):
-        self.app =app
+        self.app = app
 
     def __call__(self, environ, start_response):
         path = environ.get('PATH_INFO')
@@ -61,5 +62,6 @@ class ApiVersionMiddleware(object):
 def init_app(app):
     app.wsgi_app = ApiVersionMiddleware(app.wsgi_app)
 
+    session.api.register(bp)
 
     app.register_blueprint(bp, url_prefix='/api/' + str(CURRENT_VERSION))
