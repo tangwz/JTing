@@ -1,8 +1,7 @@
 # coding: utf-8
-
+import datetime
 from flask import request
 from flask_wtf import FlaskForm as BaseForm
-from wtforms import SelectMultipleField
 from wtforms.fields import StringField, PasswordField
 from wtforms.validators import DataRequired
 from wtforms.validators import Email, Regexp
@@ -11,12 +10,12 @@ from werkzeug.datastructures import MultiDict
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from jting.libs.errors import FormError
-from models import db, AdminUser
+from models import db, AdminUser, AdminRole
 
 
 class Form(BaseForm):
     @classmethod
-    def api_form(cls, obj=None):
+    def create_api_form(cls, obj=None):
         formdata = MultiDict(request.get_json())
         form = cls(formdata=formdata, obj=obj, csrf_enabled=False)
         form._obj = obj
@@ -41,14 +40,25 @@ class UserForm(Form):
     name = StringField(validators=[DataRequired()])
     phone = StringField(validators=[
         DataRequired(),
-        Regexp(r'^[0-9]+$')
     ])
     password = PasswordField(validators=[DataRequired()])
-    role = SelectMultipleField(validators=[DataRequired()])
 
+    def validate_username(self, field):
+        if db.session.query(AdminUser).filter(AdminUser.username == field.data.lower()).first():
+            raise StopValidation('Username has been registered.')
 
-class Password(Form):
-    password = PasswordField(validators=[DataRequired()])
+    def create_user(self):
+        user = AdminUser(
+            username = self.username.data.lower(),
+            email = self.email.data,
+            name = self.name.data,
+            phone = self.phone.data,
+            addtime = datetime.datetime.now(),
+            password = generate_password_hash(self.password.data),
+        )
+        with db.auto_commit():
+            db.session.add(user)
+        return user
 
 
 class LoginForm(Form):
@@ -63,20 +73,17 @@ class LoginForm(Form):
             raise StopValidation('Invalid username or password')
 
 
-class RegisterForm(UserForm):
-    def validate_username(self, field):
-        if db.session.query(AdminUser).filter(AdminUser.username == field.data.lower()).first():
-            raise StopValidation('Username has been registered.')
+class RoleForm(Form):
+    name = StringField(validators=[
+        DataRequired()
+    ])
+    remarks = StringField()
+    permission = StringField()
 
-    def create_user(self):
-        user = AdminUser(
-            username = self.username.data.lower(),
-            email = self.email.data,
-            name = self.name.data,
-            phone = self.phone.data,
-            password = generate_password_hash(self.password.data),
-            role = self.role.data,
-        )
-        with db.auto_commit():
-            db.session.add(user)
-        return user
+    def validate_name(self, field):
+        name = db.session.query(AdminRole).filter(AdminRole.name == field.data).first()
+        if not name:
+            raise StopValidation('name has been existed.')
+
+    def validate_permission(self, field):
+        pass

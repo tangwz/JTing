@@ -25,18 +25,18 @@ def login_session():
 
     if not username or not password:
         return json.dumps(dict(
-            error = 'username or password are required.'
+            error='username or password are required.'
         )), 400
 
     user = db.session.query(AdminUser).filter(AdminUser.username == username.lower()).first()
     if not user or check_password_hash(user.password, password):
         return json.dumps(dict(
-            error = 'Invalid username or password.'
+            error='Invalid username or password.'
         )), 400
 
     session['logined'] = True
     session['username'] = username
-    return json.dumps(user), 201
+    return json.dumps()
 
 
 @api.route('/new', methods=['POST'])

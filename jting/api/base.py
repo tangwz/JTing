@@ -2,6 +2,7 @@
 
 from functools import wraps
 from flask import request, session
+from jting.libs.errors import NotAuth, NotConfidential
 
 
 class ApiBlueprint(object):
@@ -28,7 +29,10 @@ def require_login(permission=None):
     def wrapper(f):
         @wraps(f)
         def decorated(*args, **kwargs):
-            pass
+            if not session.get('logined', False):
+                raise NotAuth()
+
+            return f(*args, **kwargs)
+
         return decorated
     return wrapper
-

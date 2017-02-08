@@ -5,6 +5,7 @@ def register_app_blueprints(app):
 
     init_app(app)
 
+
 def register_not_found(app):
     from flask import request
     from jting.libs.errors import NotFound
@@ -14,6 +15,7 @@ def register_not_found(app):
         if request.path.startswith('/api/'):
             return NotFound('URL')
         return e
+
 
 def create_app(config=None):
     from .app import create_app

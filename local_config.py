@@ -20,7 +20,3 @@ SITE_MANIFEST = os.path.abspath('./manifest.json')
 SQLALCHEMY_NATIVE_UNICODE = False
 SQLALCHEMY_DATABASE_URI = 'mysql://jting:mypass@192.168.42.128:3306/jting_cms?charset=utf8&use_unicode=1'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
-
-# config of redis
-JTING_REDIS_URI = ''
-JTING_CACHE_REDIS_URI = ''

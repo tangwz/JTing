@@ -3,9 +3,9 @@
 import re
 
 from flask import Blueprint, request
-from . import session
+from . import session, users
 
-VERSION_URL = re.compile(r'^/api/\d/')
+VERSION_URL = re.compile(r'^/api/v\d/')
 VERSION_ACCEPT = re.compile(r'application/vnd\.jting\+json;\s+version=(\d)')
 CURRENT_VERSION = 1
 
@@ -22,8 +22,8 @@ def headers_hook(response):
     if expires:
         response.headers['X-Rate-Expires'] = str(expires)
 
-    # if request.method == 'GET':
-    response.headers['Access-Control-Allow-Origin'] = '*'
+    if request.method == 'GET':
+        response.headers['Access-Control-Allow-Origin'] = '*'
 
     # api not available in iframe
     response.headers['X-Frame-Options'] = 'deny'
@@ -54,8 +54,9 @@ class ApiVersionMiddleware(object):
         if VERSION_URL.match(path):
             return self.app(environ, start_response)
 
+        # supported a default version: current version
         version = find_version(environ)
-        environ['PATH_INFO'] = path.replace('/api/', '/api/%s/' % version)
+        environ['PATH_INFO'] = path.replace('/api/', '/api/v%s/' % version)
         return self.app(environ, start_response)
 
 
@@ -63,5 +64,6 @@ def init_app(app):
     app.wsgi_app = ApiVersionMiddleware(app.wsgi_app)
 
     session.api.register(bp)
+    users.api.register(bp)
 
-    app.register_blueprint(bp, url_prefix='/api/' + str(CURRENT_VERSION))
+    app.register_blueprint(bp, url_prefix='/api/v' + str(CURRENT_VERSION))

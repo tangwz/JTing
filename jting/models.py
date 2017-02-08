@@ -38,9 +38,13 @@ db = Session()
 Base = declarative_base()
 
 
-class AdminRoles(Base):
-    __table__ = Table('admin_roles', metadata, autoload=True)
-
-
 class AdminUser(Base):
     __table__ = Table('admin_user', metadata, autoload=True)
+
+
+class AdminRole(Base):
+    __table__ = Table('admin_role', metadata, autoload=True)
+
+
+class AdminUserRole(Base):
+    __table__ = Table('admin_user_role', metadata, autoload=True)

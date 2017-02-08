@@ -5,7 +5,7 @@ from flask import url_for
 from flask_script import Manager
 
 from jting import create_app
-from jting.models import db, AdminUser, AdminRoles
+from jting.models import db, AdminUser
 
 CONFIG = os.path.abspath('./local_config.py')
 
