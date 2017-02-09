@@ -44,6 +44,8 @@ class UserForm(Form):
     password = PasswordField(validators=[DataRequired()])
 
     def validate_username(self, field):
+        if self._validate_obj('username', field.data):
+            return
         if db.session.query(AdminUser).filter(AdminUser.username == field.data.lower()).first():
             raise StopValidation('Username has been registered.')
 
@@ -59,6 +61,16 @@ class UserForm(Form):
         with db.auto_commit():
             db.session.add(user)
         return user
+
+    def update_user(self, username):
+        db.session.query(AdminUser).filter(
+            AdminUser.username == username
+        ).update({
+
+        })
+
+    def delete_user(self, username):
+        pass
 
 
 class LoginForm(Form):
@@ -87,3 +99,4 @@ class RoleForm(Form):
 
     def validate_permission(self, field):
         pass
+
