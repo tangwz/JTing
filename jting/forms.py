@@ -9,8 +9,9 @@ from wtforms.validators import StopValidation
 from werkzeug.datastructures import MultiDict
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from jting.libs.errors import FormError
+from settings import ALL_PERMS
 from models import db, AdminUser, AdminRole
+from jting.libs.errors import FormError, Denied
 
 
 class Form(BaseForm):
@@ -73,30 +74,48 @@ class UserForm(Form):
         pass
 
 
-class LoginForm(Form):
-    username = StringField(validators=[DataRequired()])
-
-    def validate_password(self, field):
-        username = self.username.data
-
-        user = db.session.query(AdminUser.username, AdminUser.password).filter(AdminUser.username == username)
-
-        if not user or check_password_hash(user.password, field.data):
-            raise StopValidation('Invalid username or password')
-
-
 class RoleForm(Form):
     name = StringField(validators=[
         DataRequired()
     ])
     remarks = StringField()
-    permission = StringField()
+    permission = StringField(validators=[
+        DataRequired()
+    ])
 
     def validate_name(self, field):
+        if self._validate_obj('name', field.data):
+            return
+
         name = db.session.query(AdminRole).filter(AdminRole.name == field.data).first()
         if not name:
             raise StopValidation('name has been existed.')
 
     def validate_permission(self, field):
-        pass
+        if self._validate_obj('permission', field.data):
+            return
 
+        # permission must be splited by ','
+        data = field.data.split(',')
+        perms = [x.id for x in ALL_PERMS]
+        for p in data:
+            if p not in perms:
+                raise Denied
+
+    def create_role(self):
+        role = AdminRole(
+            name = self.name.data,
+            remarks = self.remarks.data,
+            permission = self.permission.data,
+        )
+
+        with db.auto_commit():
+            db.session.add(role)
+        return role
+
+    def update_role(self):
+        db.session.query(AdminRole).filter(
+
+        ).update({
+
+        })

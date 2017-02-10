@@ -32,7 +32,9 @@ def require_login(permission=None):
             if not session.get('logined', False):
                 raise NotAuth()
 
-            return f(*args, **kwargs)
+            if isinstance(permission, basestring):
+                passz
 
+            return f(*args, **kwargs)
         return decorated
     return wrapper

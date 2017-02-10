@@ -2,10 +2,11 @@
 
 import ujson as json
 from flask import session, request
-from jting.models import db, AdminUser
 from werkzeug.security import check_password_hash
 from .base import ApiBlueprint
 from jting.libs.utils import decode_base64
+from jting.models import db, AdminUser, AdminRole, AdminUserRole
+
 
 api = ApiBlueprint('session')
 
@@ -33,9 +34,20 @@ def login_session():
         return json.dumps(dict(
             error='Invalid username or password.'
         )), 400
+    else:
+        roles = db.session.query(AdminRole.permission).filter(
+            AdminUserRole.id == user.id
+        ).filter(
+            AdminUserRole.role_id == AdminRole.id
+        ).all()
+
+    permission = []
+    for role in roles:
+        permission = role.permission.split(',')
 
     session['logined'] = True
     session['username'] = username
+    session['permission'] = permission
     return json.dumps()
 
 
