@@ -1,6 +1,8 @@
 # coding: utf-8
 import ujson as json
 from .base import ApiBlueprint, require_login
+from jting.forms import RoleForm
+from jting.libs.errors import NotFound
 from jting.models import db, AdminRole, AdminUserRole
 
 api = ApiBlueprint('roles')
@@ -16,4 +18,20 @@ def list_roles():
 
 @api.route('', methods=['POST'])
 def create_role():
-    pass
+    form = RoleForm.create_api_form()
+    role = form.create_role()
+    return json.dumps(dict(
+        data = role
+    )), 201
+
+@api.route('/<role_id>', methods=['PATCH'])
+def update_role(role_id):
+    role = db.session.query(AdminRole).filter(
+        AdminRole.id == role_id
+    ).first()
+    if not role:
+        raise NotFound('no role id is "%d"' % role)
+    form = RoleForm.create_api_form()
+    role = form.update_role(role)
+    return json.dumps(role)
+

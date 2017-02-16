@@ -43,6 +43,9 @@ class UserForm(Form):
         DataRequired(),
     ])
     password = PasswordField(validators=[DataRequired()])
+    roles = StringField(validators=[
+        DataRequired(),
+    ])
 
     def validate_username(self, field):
         if self._validate_obj('username', field.data):
@@ -63,12 +66,17 @@ class UserForm(Form):
             db.session.add(user)
         return user
 
-    def update_user(self, username):
-        db.session.query(AdminUser).filter(
-            AdminUser.username == username
-        ).update({
+    def update_user(self, user):
+        keys = ['email', 'name', 'phone']
 
-        })
+        for k in keys:
+            value = self.data.get(k)
+            if value:
+                setattr(user, k, value)
+
+        with db.auto_commit():
+            db.session.add(user)
+        return user
 
     def delete_user(self, username):
         pass
@@ -97,7 +105,7 @@ class RoleForm(Form):
 
         # permission must be splited by ','
         data = field.data.split(',')
-        perms = [x.id for x in ALL_PERMS]
+        perms = [x.id for _, x in ALL_PERMS.iteritems()]
         for p in data:
             if p not in perms:
                 raise Denied
@@ -113,9 +121,17 @@ class RoleForm(Form):
             db.session.add(role)
         return role
 
-    def update_role(self):
-        db.session.query(AdminRole).filter(
+    def update_role(self, role):
+        keys = ['name', 'remarks', 'permission']
 
-        ).update({
+        for k in keys:
+            value = self.data.get(k)
+            if value:
+                setattr(role, k, value)
 
-        })
+        with db.auto_commit():
+            db.session.add(role)
+        return role
+
+    def delete_role(self):
+        pass

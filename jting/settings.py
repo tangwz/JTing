@@ -22,7 +22,9 @@ class AttributeClass(dict):
 
 
 ALL_PERMS = {
-    "SUPER_ADMIN": AttributeClass({"id": "9", "name": u"超级管理"}),
-    "ROLE_ADMIN" : AttributeClass({"id": "1", "name": u"角色管理"}),
-    "GUEST"      : AttributeClass({"id": "0", "name": u"普通用户"})
+    "USER_MANAGE": AttributeClass({"id": "1", "name": u"用户管理"}),
+    "ROLE_MANAGE": AttributeClass({"id": "2", "name": u"角色管理"}),
+
+    "TOPIC_MANAGE": AttributeClass({"id": "3", "name": u"话题管理"}),
+    "COCO_MANAGE": AttributeClass({"id": "4", "name": u"分类管理"})
 }
