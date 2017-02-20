@@ -33,7 +33,7 @@ def require_login(permission=None):
                 raise NotAuth()
 
             if isinstance(permission, basestring):
-                passz
+                pass
 
             return f(*args, **kwargs)
         return decorated

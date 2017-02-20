@@ -31,7 +31,7 @@ def update_role(role_id):
     ).first()
     if not role:
         raise NotFound('no role id is "%d"' % role)
-    form = RoleForm.create_api_form()
+    form = RoleForm.create_api_form(obj=role)
     role = form.update_role(role)
     return json.dumps(role)
 

@@ -8,10 +8,9 @@ from jting.libs.errors import NotFound
 api = ApiBlueprint('users')
 
 
-@api.route('', method=['GET'])
-@require_login(permission=None)
+@api.route('', methods=['GET'])
 def list_users():
-    q = db.session.query(AdminUser)
+    q = db.session.query(AdminUser.username, AdminUser.email, AdminUser.name, AdminUser.phone)
     data = q.limit(20).all()
     return json.dumps(dict(data=data)), 200
 
@@ -32,6 +31,18 @@ def update_user(username):
     ).first()
     if not user:
         raise NotFound('no user called "%s"' % username)
-    form = UserForm.create_api_form()
+    form = UserForm.create_api_form(obj=user)
     user = form.update_user(user)
+    return json.dumps(user)
+
+
+@api.route('/<username>', methods=['DELETE'])
+def delete_user(username):
+    user = db.session.query(AdminUser).filter(
+        AdminUser.username == username
+    ).first()
+    if not user:
+        raise NotFound('no user called "%s"' % username)
+    with db.auto_commit():
+        db.session.query(AdminUser).filter(AdminUser.username == username).delete()
     return json.dumps(user)

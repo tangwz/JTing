@@ -3,7 +3,7 @@ import datetime
 from flask import request
 from flask_wtf import FlaskForm as BaseForm
 from wtforms.fields import StringField, PasswordField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Optional
 from wtforms.validators import Email, Regexp
 from wtforms.validators import StopValidation
 from werkzeug.datastructures import MultiDict
@@ -35,17 +35,12 @@ class UserForm(Form):
         Regexp(r'^[a-zA-Z0-9]+$')
     ])
     email = StringField(validators=[
-        DataRequired(),
+        Optional(),
         Email()
     ])
-    name = StringField(validators=[DataRequired()])
-    phone = StringField(validators=[
-        DataRequired(),
-    ])
-    password = PasswordField(validators=[DataRequired()])
-    roles = StringField(validators=[
-        DataRequired(),
-    ])
+    name = StringField()
+    phone = StringField()
+    password = PasswordField()
 
     def validate_username(self, field):
         if self._validate_obj('username', field.data):
@@ -77,9 +72,6 @@ class UserForm(Form):
         with db.auto_commit():
             db.session.add(user)
         return user
-
-    def delete_user(self, username):
-        pass
 
 
 class RoleForm(Form):
@@ -132,6 +124,3 @@ class RoleForm(Form):
         with db.auto_commit():
             db.session.add(role)
         return role
-
-    def delete_role(self):
-        pass
