@@ -14,9 +14,9 @@ bp = Blueprint('api', __name__)
 
 @bp.after_request
 def headers_hook(response):
-    remaining = getattr(request, '_rate_remaining', None)
-    if remaining:
-        response.headers['X-Rate-Limit'] = str(remaining)
+    limit = getattr(request, '_rate_remaining', None)
+    if limit and limit.send_x_headers:
+        response.headers['X-Rate-Limit'] = str(limit.remaining)
 
     expires = getattr(request, '_rate_expires', None)
     if expires:

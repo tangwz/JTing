@@ -12,6 +12,7 @@
 import os
 
 # config of flask app -- jting
+
 DEBUG = True
 SECRET_KEY = 'development'
 SITE_MANIFEST = os.path.abspath('./manifest.json')
