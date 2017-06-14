@@ -1,5 +1,5 @@
 # jting
-jting will be my RESTful backend Appbuilder in the future.
+jting will be my RESTful backend Appbuilder in the future.This will be a easily use framework.
 
 
 ## To-do:
@@ -7,7 +7,3 @@ jting will be my RESTful backend Appbuilder in the future.
  - add Docker.
  - add Celery.
  - add branch GraphQL.
-
- 
-## Reference:
- - platform: [zerqu](https://github.com/lepture/zerqu)
