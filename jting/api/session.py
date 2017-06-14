@@ -14,6 +14,10 @@ api = ApiBlueprint('session')
 @api.route('/new', methods=['POST'])
 def register():
     data = request.get_json()
+    print data
+    if not data:
+        raise SchemaError()
+
     account = data.get('account', None)
     password = data.get('password', None)
     nickname = data.get('nickname', None)
@@ -46,6 +50,9 @@ def register():
 @api.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
+    if not data:
+        raise SchemaError()
+
     account = data.get('account', None)
     raw = data.get('password', None)
 
@@ -69,9 +76,10 @@ def login():
     ), 200
 
 
-@api.route('/', methods=['DELETE'])
+@api.route('/logout', methods=['GET'])
 def logout():
-    auth_token = request.headers.get('Authorization', None)
+    Authorization = request.headers.get('Authorization', None)
+    auth_token = Authorization.split(' ')[-1]
     if not auth_token:
         raise NotConfidence()
     suc, _ = decode_auth_token(auth_token)
@@ -80,5 +88,5 @@ def logout():
 
     sid = session.pop('logined', None)
     if not sid:
-        raise APIException(error='logout failed', description='session error.')
+        raise APIException(error='logout failed', description='You have been logout.')
     return '', 204
