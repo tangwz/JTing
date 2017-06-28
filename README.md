@@ -3,7 +3,7 @@ jting will be my RESTful backend Appbuilder in the future.This will be a easily 
 
 
 ## To-do:
+ - add Cache.
  - add Oauth2.
- - add Docker.
- - add Celery.
- - add branch GraphQL.
+ - add Docker and Docker compose.
+ - add v2 GraphQL.
