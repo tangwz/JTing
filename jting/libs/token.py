@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import jwt
 import datetime
+from flask import request
 from jting.config import SECRET_KEY
 from jting.logservice import logger
 from jting.libs.errors import ServerError
@@ -36,7 +37,7 @@ def decode_auth_token(auth_token):
     """
     try:
         payload = jwt.decode(auth_token, SECRET_KEY)
-        return True, payload['sub']
+        return True, payload
     except jwt.ExpiredSignatureError:
         return False, 'Signature expired. Please log in again.'
     except jwt.InvalidTokenError:

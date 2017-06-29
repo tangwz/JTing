@@ -30,6 +30,20 @@ class SchemaError(APIException):
     error = 'Invalid format'
 
 
+class FormError(APIException):
+    error = 'Invalid format'
+
+    def __init__(self, form, response=None):
+        self.form = form
+        super(FormError, self).__init__(None, response)
+
+    def get_body(self, environ=None):
+        return text_type(json.dumps(dict(
+            error=self.error,
+            description=self.form.errors
+        )))
+
+
 class NotAuth(APIException):
     code = 401
     error = 'Require login'

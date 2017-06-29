@@ -2,6 +2,7 @@
 
 from flask import request
 from .errors import APIException
+from jting.models import db
 
 
 class Pagination(object):
@@ -52,7 +53,7 @@ def get_pagination_query():
         raise APIException(description='page should be larger than 1')
 
     per_page = int_or_raise('perpage', 10, 100)
-    if page < 10:
+    if per_page < 10:
         raise APIException(description='per page should be larger than 10')
 
     return page, per_page
@@ -61,14 +62,14 @@ def get_pagination_query():
 def pagination_query(model, key, **filters):
     page, per_page = get_pagination_query()
 
-    total = model.count(**filters)
+    total = db.session.query(model).filter_by(**filters).count()
     rv = Pagination(total, page, per_page)
 
     if page > rv.pages:
         raise APIException(description='page should be smaller than total pages')
 
     if not isinstance(key, str):
-        q = model.query.filter_by(**filters).order_by(key)
+        q = db.session.query(model).filter_by(**filters).order_by(key)
         return rv.fetch(q), rv
 
     order_key = request.args.get('key', key)
@@ -80,6 +81,6 @@ def pagination_query(model, key, **filters):
     if desc:
         field = field.desc()
 
-    q = model.query.filter_by(**filters).order_by(field)
+    q = db.session.query(model).filter_by(**filters).order_by(field)
     data = rv.fetch(q)
     return data, rv
