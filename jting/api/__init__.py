@@ -1,7 +1,7 @@
 # coding: utf-8
 import re
 from flask import Blueprint, request
-from . import  session
+from . import hubs, session
 
 
 VERSION_URL = re.compile(r'^/api/v\d/')
@@ -73,6 +73,7 @@ class ApiVersionMiddleware(object):
 def init_app(app):
     app.wsgi_app = ApiVersionMiddleware(app.wsgi_app)
 
+    hubs.api.register(bp)
     session.api.register(bp)
 
     app.register_blueprint(bp, url_prefix='/api/v' + str(CURRENT_VERSION))

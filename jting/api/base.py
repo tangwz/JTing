@@ -22,15 +22,3 @@ class ApiBlueprint(object):
         for f, rule, options in self.deferred:
             endpoint = options.pop("endpoint", f.__name__)
             bp.add_url_rule(url_prefix + rule, endpoint, f, **options)
-
-
-def require_confidence(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.headers.get('Authorization', None)
-        if not auth:
-            raise NotConfidence()
-
-
-        return f(*args, **kwargs)
-    return decorated
