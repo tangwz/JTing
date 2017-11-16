@@ -1,2 +1,2 @@
-# jsonlint
-jsonlint is a demo using jsonlint in Flask.
+# jsonlint-flask
+jsonlint-flask is a demo using jsonlint in Flask.
