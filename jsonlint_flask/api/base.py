@@ -1,7 +1,4 @@
 # coding: utf-8
-from flask import request
-from functools import wraps
-from jting.libs.errors import NotConfidence
 
 
 class ApiBlueprint(object):

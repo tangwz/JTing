@@ -26,12 +26,12 @@
 
 
 def register_app_blueprints(app):
-    from jting.api import init_app
+    from jsonlint_flask.api import init_app
     init_app(app)
 
 
 def register_not_found(app):
-    from jting.libs.errors import NotFound
+    from jsonlint_flask.libs.errors import NotFound
 
     @app.errorhandler(404)
     def handle_not_found(e):

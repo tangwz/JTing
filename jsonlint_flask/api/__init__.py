@@ -1,7 +1,7 @@
 # coding: utf-8
 import re
 from flask import Blueprint, request
-from . import hubs, session
+from . import index
 
 
 VERSION_URL = re.compile(r'^/api/v\d/')
@@ -16,24 +16,6 @@ bp = Blueprint('api', __name__)
 def headers_hook(response):
     if request.method == 'GET':
         response.headers['Access-Control-Allow-Origin'] = '*'
-
-    # set jwt authorization header
-    token = getattr(request, '_token', None)
-    if token:
-        response.headers['Authorization'] = 'Bearer ' + token
-
-    # You can check the returned HTTP headers of API request
-    # to see your current rate limit status
-    limit = getattr(request, '_limit', None)
-    remaining = getattr(request, '_remaining', None)
-    reset = getattr(request, '_reset', None)
-
-    if limit:
-        response.headers['X-RateLimit-Limit'] = limit
-    if remaining:
-        response.headers['X-RateLimit-Remaining'] = remaining
-    if reset:
-        response.headers['X-RateLimit-Reset'] = reset
 
     # api not available in iframe
     response.headers['X-Frame-Options'] = 'deny'
@@ -73,7 +55,6 @@ class ApiVersionMiddleware(object):
 def init_app(app):
     app.wsgi_app = ApiVersionMiddleware(app.wsgi_app)
 
-    hubs.api.register(bp)
-    session.api.register(bp)
+    index.api.register(bp)
 
     app.register_blueprint(bp, url_prefix='/api/v' + str(CURRENT_VERSION))

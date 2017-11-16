@@ -1,9 +1,7 @@
 # coding: utf-8
-from libs.cache import redis
 from datetime import datetime
 from flask import Flask as _Flask
 from flask.json import JSONEncoder as _JSONEncoder
-from libs.sessions import RedisSessionInterface
 
 
 class JSONEncoder(_JSONEncoder):
@@ -31,7 +29,6 @@ class Flask(_Flask):
 # Factory method
 def create_app(config=None):
     app = Flask(__name__)
-    app.session_interface = RedisSessionInterface(redis=redis)
 
     if config is not None:
         if isinstance(config, dict):
